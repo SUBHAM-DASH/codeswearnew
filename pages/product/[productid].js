@@ -2,12 +2,17 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+import { connectToMongoDb } from '@/database/connectToDatabase';
+import Products from '@/models/Products';
 
-const productId = ({data}) => {
+const productId = ({ product,pincodes }) => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const router = useRouter();
-  const { productid } = router.query;
-  const [pincode,setPinCode] = useState("");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [pincode, setPinCode] = useState("");
 
+  const serverProps = JSON.parse(product);
+  const pins = JSON.parse(pincodes);
 
   const addToCart = () => {
     router.push("/cart/cartproduct");
@@ -16,14 +21,14 @@ const productId = ({data}) => {
   const handleChange = (e) => {
     setPinCode(e.target.value);
     if (e.target.value.length === 6) {
-      if(data.pincodes.includes(e.target.value)){
+      if (pins.includes(e.target.value)) {
         toast.success("Product is availability to your place.", {
           position: toast.POSITION.TOP_RIGHT
         });
         setTimeout(() => {
           setPinCode("");
         }, 1000);
-      }else{
+      } else {
         toast.error("sorry...product is not available to your place.", {
           position: toast.POSITION.TOP_RIGHT
         });
@@ -36,14 +41,14 @@ const productId = ({data}) => {
 
   return (
     <div>
-      <ToastContainer/>
+      <ToastContainer />
       <section className="text-gray-600 body-font overflow-hidden">
-        <div className="container px-5 py-16 mx-auto">
+        <div className="container px-5 pt-16 mx-auto">
           <div className="lg:w-4/5 mx-auto flex flex-wrap">
-            <img alt="ecommerce" className="lg:w-1/3 w-[300px] lg:h-[370px] object-center rounded" src="https://m.media-amazon.com/images/I/41vk8PCNvfL.jpg" />
+            <img alt="ecommerce" className="lg:w-1/3 w-[300px] lg:h-[370px] object-center rounded" src={serverProps.image} />
             <div className="lg:w-1/2 w-full lg:pl-10 h-[400px] lg:py-6 mt-6 lg:mt-0">
-              <h2 className="text-sm title-font text-gray-500 tracking-widest">BRAND NAME</h2>
-              <h1 className="text-gray-900 text-3xl title-font font-medium mb-1">The Catcher in the Rye</h1>
+              <h2 className="text-2xl title-font text-gray-500 tracking-widest">{serverProps.category.charAt(0).toUpperCase() + serverProps.category.slice(1)}</h2>
+              <h1 className="text-gray-900 text-md title-font font-medium mb-1">{serverProps.title}</h1>
               <div className="flex mb-4">
                 <span className="flex items-center">
                   <svg fill="currentColor" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-4 h-4 text-indigo-500" viewBox="0 0 24 24">
@@ -61,42 +66,32 @@ const productId = ({data}) => {
                   <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-4 h-4 text-indigo-500" viewBox="0 0 24 24">
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
                   </svg>
-                  <span className="text-gray-600 ml-3">4 Reviews</span>
-                </span>
-                <span className="flex ml-3 pl-3 py-2 border-l-2 border-gray-200 space-x-2s">
-                  <a className="text-gray-500">
-                    <svg fill="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-5 h-5" viewBox="0 0 24 24">
-                      <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
-                    </svg>
-                  </a>
-                  <a className="text-gray-500">
-                    <svg fill="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-5 h-5" viewBox="0 0 24 24">
-                      <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"></path>
-                    </svg>
-                  </a>
-                  <a className="text-gray-500">
-                    <svg fill="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-5 h-5" viewBox="0 0 24 24">
-                      <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"></path>
-                    </svg>
-                  </a>
                 </span>
               </div>
-              <p className="leading-relaxed">Fam locavore kickstarter distillery. Mixtape chillwave tumeric sriracha taximy chia microdosing tilde DIY. XOXO fam indxgo juiceramps cornhole raw denim forage brooklyn. Everyday carry +1 seitan poutine tumeric. Gastropub blue bottle austin listicle pour-over, neutra jean shorts keytar banjo tattooed umami cardigan.</p>
               <div className="flex mt-6 items-center pb-5 border-b-2 border-gray-100 mb-5">
                 <div className="flex">
                   <span className="mr-3">Color</span>
-                  <button className="border-2 border-gray-300 rounded-full w-6 h-6 focus:outline-none"></button>
-                  <button className="border-2 border-gray-300 ml-1 bg-gray-700 rounded-full w-6 h-6 focus:outline-none"></button>
-                  <button className="border-2 border-gray-300 ml-1 bg-indigo-500 rounded-full w-6 h-6 focus:outline-none"></button>
+                  {
+                    serverProps.color.map((clr, index) => {
+                      return (
+                        <div key={index}>
+                          <button className={`border-2 border-gray-300 ml-1 rounded-full w-6 h-6 focus:outline-none ${clr === 'blue' ? 'bg-blue-700' : clr === 'white' ? 'bg-slate-100' : clr === 'red' ? 'bg-red-700' : clr === 'black' ? 'bg-black' : `bg-${clr}-700`}`}></button>
+                        </div>
+                      )
+                    })
+                  }
                 </div>
                 <div className="flex ml-6 items-center">
                   <span className="mr-3">Size</span>
                   <div className="relative">
-                    <select className="rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-base pl-3 pr-10">
-                      <option>SM</option>
-                      <option>M</option>
-                      <option>L</option>
-                      <option>XL</option>
+                    <select className="rounded border appearance-none border-gray-300 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-base pl-3 pr-10">
+                      {
+                        serverProps.size.map((opt, index) => {
+                          return (
+                            <option key={index}>{opt}</option>
+                          )
+                        })
+                      }
                     </select>
                     <span className="absolute right-0 top-0 h-full w-10 text-center text-gray-600 pointer-events-none flex items-center justify-center">
                       <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-4 h-4" viewBox="0 0 24 24">
@@ -106,15 +101,15 @@ const productId = ({data}) => {
                   </div>
                 </div>
               </div>
-              <div className="flex">
-                <span className="title-font font-medium text-2xl text-gray-900">$58.00</span>
+              <div className="flex mt-16">
+                <span className="title-font font-medium text-2xl text-gray-900">₹ {serverProps.price}.00</span>
                 <button className="flex ml-auto text-white bg-orange-500 border-0 py-2 px-6 focus:outline-none hover:bg-orange-700 rounded text-sm" onClick={addToCart}>Add To Cart</button>
                 <button className="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-700 rounded text-sm">Checkout</button>
               </div>
             </div>
           </div>
         </div>
-        <div className='text-center my-3 space-x-3 ml-40'>
+        <div className='text-center mb-4 space-x-3 ml-40'>
           <input placeholder='Check Availability To Your Place...' value={pincode} onChange={handleChange} className='border-2 text-sm w-1/3 py-2 px-2 rounded-md border-orange-400' />
         </div>
       </section>
@@ -126,9 +121,10 @@ export default productId;
 
 export async function getServerSideProps(context) {
   const { productid } = context.query;
-  let response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincodes`, {
-    method: 'GET'
-  });
-  let data = await response.json();
-  return { props: { data } };
+  await connectToMongoDb();
+  const product = await Products.findOne({ _id: productid });
+  const fetchData = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincodes`);
+  const pincodes = await fetchData.json();
+
+  return { props: { product: JSON.stringify(product), pincodes: JSON.stringify(pincodes.pincodes) } };
 }
