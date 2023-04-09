@@ -44,7 +44,7 @@ const Navbar = () => {
         <ul className='flex text-white space-x-7 mx-8'>
           <li className='text-2xl font-mono'>Codeswear.com</li>
           <li className='cursor-pointer mt-1'>
-            <FiLogOut size={26} color="white" />
+            <Link href={'/login'}><FiLogOut size={26} color="white" /></Link>
           </li>
           <li className='cursor-pointer mt-1'>
             <FiMenu size={26} color="white" onClick={openSidebar} />

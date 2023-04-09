@@ -12,20 +12,24 @@ export default function App({ Component, pageProps }) {
   const isTokenAvailable = checkToken();
 
   useEffect(() => {
-    if (!isTokenAvailable && !router.pathname.startsWith('/login')) {
+    if (!isTokenAvailable && !router.pathname.startsWith('/login') && !router.pathname.startsWith('/signup')) {
       router.push('/login');
+    } else if (!isTokenAvailable && router.pathname.startsWith('/signup')) {
+      router.push("/signup");
     }
   }, [isTokenAvailable, router]);
 
   if (router.pathname.startsWith('/login')) {
     return <Component {...pageProps} />;
+  }else if(router.pathname.startsWith('/signup')){
+    return <Component {...pageProps}/>
   }
 
   return (
     <>
-      <Navbar/>
+      <Navbar />
       <Component {...pageProps} />
-      <Footer/>
+      <Footer />
     </>
   );
 }
