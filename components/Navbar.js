@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { FiLogOut, FiMenu } from 'react-icons/fi';
 import Sidebar from './Sidebar';
 import { useRouter } from 'next/router';
+import { signOut } from 'next-auth/react';
 
 
 const Navbar = () => {
@@ -11,6 +12,11 @@ const Navbar = () => {
 
   const openSidebar = () => {
     setOpenbar(!openBar);
+  }
+
+  const handleLogout = ()=>{
+    signOut();
+    localStorage.clear();
   }
 
 
@@ -44,7 +50,7 @@ const Navbar = () => {
         <ul className='flex text-white space-x-7 mx-8'>
           <li className='text-2xl font-mono'>Codeswear.com</li>
           <li className='cursor-pointer mt-1'>
-            <Link href={'/login'}><FiLogOut size={26} color="white" /></Link>
+            <FiLogOut size={26} color="white"  onClick={handleLogout}/>
           </li>
           <li className='cursor-pointer mt-1'>
             <FiMenu size={26} color="white" onClick={openSidebar} />
