@@ -121,6 +121,9 @@ export default productId;
 
 export async function getServerSideProps(context) {
   const { productid } = context.query;
+  // Check if the cookie is available in the incoming request
+  const codeswearToken = context.req.cookies['codeswear-token'];
+
   await connectToMongoDb();
   const product = await Products.findOne({ _id: productid });
   const fetchData = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincodes`);

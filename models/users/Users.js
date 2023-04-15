@@ -7,6 +7,10 @@ const UsersSchema = new mongoose.Schema({
     },
     floating_password: {
         type: String,
+        default: ""
+    },
+    loginBy: {
+        type: String,
         required: true
     },
     floating_first_name: {
@@ -15,11 +19,11 @@ const UsersSchema = new mongoose.Schema({
     },
     floating_phone: {
         type: String,
-        required: true
+        default:""
     },
     full_address: {
         type: String,
-        required: true
+        default:""
     },
     floating_last_name: {
         type: String,

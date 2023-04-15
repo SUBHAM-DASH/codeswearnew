@@ -5,19 +5,43 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from 'next/router';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
+import Cookies from 'js-cookie';
+
 
 const Login = () => {
-
   const router = useRouter();
-
   const session = useSession();
-  // console.log(session)
+  console.log(session)
 
   useEffect(() => {
     if (session.status === "authenticated") {
-      router.push("/");
-      localStorage.setItem("codeswear-token", "ahsehywqe6q7hbewqe82q7hwehqwehhsq7G");
+      const headers = {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+      let data = {
+        email: session.data.user.email,
+        name: session.data.user.name,
+        loginBy: "sociallogin"
+      }
+      axios.post(`${process.env.NEXT_PUBLIC_HOST}/api/users/loginuser`, data, headers).then((response) => {
+        if (response.data.status === "success") {
+          toast.success(response.data.message, {
+            position: toast.POSITION.TOP_RIGHT
+          });
+          // localStorage.setItem("codeswear-token", response.data.token);
+          Cookies.set("codeswear-token", response.data.token, { expires: 1 });
+          setTimeout(() => {
+            router.push("/");
+          }, 1000);
+        }
+      }).catch((error) => {
+        toast.error(error.message, {
+          position: toast.POSITION.TOP_RIGHT
+        });
+      });
     } else {
       router.push("/login")
     }
@@ -37,14 +61,19 @@ const Login = () => {
         toast.success(response.data.message, {
           position: toast.POSITION.TOP_RIGHT
         });
-        localStorage.setItem("codeswear-token", response.data.token);
+        // localStorage.setItem("codeswear-token", response.data.token);
+
+        Cookies.set("codeswear-token", response.data.token, { expires: 1 });
+
         setLoginForm({ email: "", password: "" });
         setTimeout(() => {
           router.push("/");
         }, 1000);
       }
     }).catch((error) => {
-      console.log(error.message);
+      toast.error(error.message, {
+        position: toast.POSITION.TOP_RIGHT
+      });
     })
   }
 
@@ -179,6 +208,7 @@ function facebookBtn() {
   return (
     <>
       <button
+        onClick={signIn}
         className="mb-3 flex w-full items-center justify-center rounded bg-blue-600 px-7 py-2 text-center text-sm font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]"
         href="#!"
         role="button"

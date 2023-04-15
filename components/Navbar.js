@@ -14,9 +14,9 @@ const Navbar = () => {
     setOpenbar(!openBar);
   }
 
-  const handleLogout = ()=>{
+  const handleLogout = () => {
     signOut();
-    localStorage.clear();
+    document.cookie = "codeswear-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   }
 
 
@@ -50,7 +50,7 @@ const Navbar = () => {
         <ul className='flex text-white space-x-7 mx-8'>
           <li className='text-2xl font-mono'>Codeswear.com</li>
           <li className='cursor-pointer mt-1'>
-            <FiLogOut size={26} color="white"  onClick={handleLogout}/>
+            <FiLogOut size={26} color="white" onClick={handleLogout} />
           </li>
           <li className='cursor-pointer mt-1'>
             <FiMenu size={26} color="white" onClick={openSidebar} />
