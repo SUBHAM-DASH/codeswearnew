@@ -4,19 +4,56 @@ import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import { connectToMongoDb } from '@/database/connectToDatabase';
 import Products from '@/models/Products';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
-const productId = ({ product,pincodes }) => {
+
+const productId = ({ product, pincodes }) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const router = useRouter();
+  const serverProps = JSON.parse(product);
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [pincode, setPinCode] = useState("");
 
-  const serverProps = JSON.parse(product);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [selectSize, setSelectSize] = useState(serverProps['size'][0]);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [selectColor, setSelectColor] = useState(serverProps['color'][0]);
+
+
   const pins = JSON.parse(pincodes);
 
-  const addToCart = () => {
-    router.push("/cart/cartproduct");
+  const onSelectSize = (event) => {
+    setSelectSize(event.target.value);
   }
+
+  const onSelectColor = (color) => {
+    setSelectColor(color);
+  }
+
+  const addToCart = () => {
+    const headers = {
+      headers: {
+        "Content-type": "application/json",
+        "codeswear-token": Cookies.get('codeswear-token')
+      }
+    };
+
+    axios.post(`${process.env.NEXT_PUBLIC_HOST}/api/cartdetails/addincart`, { ...serverProps, size: selectSize, color: selectColor }, headers).then((response) => {
+      console.log(response)
+      // if (response.data.status === "success") {
+      //   toast.success("Product is availability to your place.", {
+      //     position: toast.POSITION.TOP_RIGHT
+      //   });
+        // router.push("/cart/cartproduct");
+      // }
+    }).catch((error) => {
+      toast.error(error.message, {
+        position: toast.POSITION.TOP_RIGHT
+      });
+    });
+  }
+
 
   const handleChange = (e) => {
     setPinCode(e.target.value);
@@ -75,7 +112,7 @@ const productId = ({ product,pincodes }) => {
                     serverProps.color.map((clr, index) => {
                       return (
                         <div key={index}>
-                          <button className={`border-2 border-gray-300 ml-1 rounded-full w-6 h-6 focus:outline-none ${clr === 'blue' ? 'bg-blue-700' : clr === 'white' ? 'bg-slate-100' : clr === 'red' ? 'bg-red-700' : clr === 'black' ? 'bg-black' : `bg-${clr}-700`}`}></button>
+                          <button onClick={() => onSelectColor(clr)} className={`border-2 border-gray-300 ml-1 rounded-full w-6 h-6 focus:outline-none ${clr === 'blue' ? 'bg-blue-700' : clr === 'white' ? 'bg-slate-100' : clr === 'red' ? 'bg-red-700' : clr === 'black' ? 'bg-black' : `bg-${clr}-700`}`}></button>
                         </div>
                       )
                     })
@@ -84,11 +121,11 @@ const productId = ({ product,pincodes }) => {
                 <div className="flex ml-6 items-center">
                   <span className="mr-3">Size</span>
                   <div className="relative">
-                    <select className="rounded border appearance-none border-gray-300 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-base pl-3 pr-10">
+                    <select onChange={onSelectSize} className="rounded border appearance-none border-gray-300 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-base pl-3 pr-10">
                       {
                         serverProps.size.map((opt, index) => {
                           return (
-                            <option key={index}>{opt}</option>
+                            <option key={index} value={opt}>{opt}</option>
                           )
                         })
                       }
@@ -123,11 +160,13 @@ export async function getServerSideProps(context) {
   const { productid } = context.query;
   // Check if the cookie is available in the incoming request
   const codeswearToken = context.req.cookies['codeswear-token'];
-
   await connectToMongoDb();
   const product = await Products.findOne({ _id: productid });
-  const fetchData = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincodes`);
+  const fetchData = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincodes`, {
+    headers: { 'codeswear-token': codeswearToken }
+  });
   const pincodes = await fetchData.json();
 
   return { props: { product: JSON.stringify(product), pincodes: JSON.stringify(pincodes.pincodes) } };
 }
+

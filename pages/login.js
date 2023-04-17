@@ -12,7 +12,7 @@ import Cookies from 'js-cookie';
 const Login = () => {
   const router = useRouter();
   const session = useSession();
-  console.log(session)
+  // console.log(session)
 
   useEffect(() => {
     if (session.status === "authenticated") {
@@ -62,7 +62,6 @@ const Login = () => {
           position: toast.POSITION.TOP_RIGHT
         });
         // localStorage.setItem("codeswear-token", response.data.token);
-
         Cookies.set("codeswear-token", response.data.token, { expires: 1 });
 
         setLoginForm({ email: "", password: "" });
@@ -163,6 +162,7 @@ const Login = () => {
                 {githubBtn()}
               </form>
             </div>
+            <button onClick={signOut}>logout</button>
           </div>
         </div>
 

@@ -6,7 +6,7 @@ const CartDetailSchema = new mongoose.Schema({
         required: true
     },
     size: {
-        type: Array,
+        type: String,
         required: true
     },
     quantity: {
@@ -14,10 +14,6 @@ const CartDetailSchema = new mongoose.Schema({
         required: true
     },
     price: {
-        type: String,
-        required: true
-    },
-    size: {
         type: String,
         required: true
     },
@@ -32,10 +28,14 @@ const CartDetailSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
+    },
+    productId: {
+        type: String,
+        required: true
     }
 }, { timestamps: true });
 
-mongoose.model = {};
+mongoose.models = {};
 const CartDetailsModel = mongoose.model('Cartdetails', CartDetailSchema);
 export default CartDetailsModel;
 

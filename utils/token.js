@@ -4,6 +4,7 @@ export function checkToken() {
 
         // Check if the cookie is available
         const codeswearToken = getCookie('codeswear-token');
+        // console.log("codeswearToken",codeswearToken)
 
         if (!codeswearToken) {
             return false;
