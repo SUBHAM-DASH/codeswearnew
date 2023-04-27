@@ -4,7 +4,7 @@ import CartDetailsModel from "@/models/Cartdetails";
 const handler = async (req, res) => {
     try {
         if (req.method === "POST") {
-            const { _id, category, price, color, size, image, title } = req.body;
+            const { _id, price, color, size, image, title } = req.body;
             const isExistInCart = await CartDetailsModel.findOne({ productId: _id, userId: req.userId, size: size, color: color });
             if (isExistInCart) {
                 return res.status(200).json({ status: "failed", message: "product is already in cart." });

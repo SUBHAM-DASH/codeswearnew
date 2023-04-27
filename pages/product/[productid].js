@@ -40,13 +40,16 @@ const productId = ({ product, pincodes }) => {
     };
 
     axios.post(`${process.env.NEXT_PUBLIC_HOST}/api/cartdetails/addincart`, { ...serverProps, size: selectSize, color: selectColor }, headers).then((response) => {
-      console.log(response)
-      // if (response.data.status === "success") {
-      //   toast.success("Product is availability to your place.", {
-      //     position: toast.POSITION.TOP_RIGHT
-      //   });
-        // router.push("/cart/cartproduct");
-      // }
+      if (response.data.status === "success") {
+        toast.success("product is added your cart successfully.", {
+          position: toast.POSITION.TOP_RIGHT
+        });
+        router.push("/cart/cartproduct");
+      } else {
+        toast.info(response.data.message, {
+          position: toast.POSITION.TOP_RIGHT
+        });
+      }
     }).catch((error) => {
       toast.error(error.message, {
         position: toast.POSITION.TOP_RIGHT
@@ -74,6 +77,15 @@ const productId = ({ product, pincodes }) => {
         }, 1000);
       }
     }
+  }
+
+  const handleSelectAddress = () => {
+    const productData = [{ productId: serverProps._id, productSize: selectSize, productColor: selectColor, price: serverProps.price }];
+
+    router.push({
+      pathname: '/productdvyaddress',
+      query: { product: JSON.stringify(productData) },
+    });
   }
 
   return (
@@ -141,7 +153,7 @@ const productId = ({ product, pincodes }) => {
               <div className="flex mt-16">
                 <span className="title-font font-medium text-2xl text-gray-900">₹ {serverProps.price}.00</span>
                 <button className="flex ml-auto text-white bg-orange-500 border-0 py-2 px-6 focus:outline-none hover:bg-orange-700 rounded text-sm" onClick={addToCart}>Add To Cart</button>
-                <button className="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-700 rounded text-sm">Checkout</button>
+                <button onClick={handleSelectAddress} className="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-700 rounded text-sm">Checkout</button>
               </div>
             </div>
           </div>
