@@ -6,6 +6,11 @@ import { connectToMongoDb } from '@/database/connectToDatabase';
 import Products from '@/models/Products';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import StripePayment from '@/components/StripePayment';
+
+import { loadStripe } from "@stripe/stripe-js";
+const stripePromise = loadStripe(process.env.STRIPE_PUBLISHABLE_KEY);
+
 
 
 const productId = ({ product, pincodes }) => {
@@ -19,6 +24,9 @@ const productId = ({ product, pincodes }) => {
   const [selectSize, setSelectSize] = useState(serverProps['size'][0]);
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [selectColor, setSelectColor] = useState(serverProps['color'][0]);
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [isStripeVisible, setStripeVisible] = useState(false);
 
 
   const pins = JSON.parse(pincodes);
@@ -88,6 +96,12 @@ const productId = ({ product, pincodes }) => {
     });
   }
 
+  const isCheckout = () => {
+    setStripeVisible(!isStripeVisible);
+  }
+
+
+
   return (
     <div>
       <ToastContainer />
@@ -153,7 +167,7 @@ const productId = ({ product, pincodes }) => {
               <div className="flex mt-16">
                 <span className="title-font font-medium text-2xl text-gray-900">₹ {serverProps.price}.00</span>
                 <button className="flex ml-auto text-white bg-orange-500 border-0 py-2 px-6 focus:outline-none hover:bg-orange-700 rounded text-sm" onClick={addToCart}>Add To Cart</button>
-                <button onClick={handleSelectAddress} className="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-700 rounded text-sm">Checkout</button>
+                <button onClick={isCheckout} className="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-700 rounded text-sm">Checkout</button>
               </div>
             </div>
           </div>
@@ -162,6 +176,12 @@ const productId = ({ product, pincodes }) => {
           <input placeholder='Check Availability To Your Place...' value={pincode} onChange={handleChange} className='border-2 text-sm w-1/3 py-2 px-2 rounded-md border-orange-400' />
         </div>
       </section>
+
+      <div>
+        {
+          isStripeVisible && <StripePayment products={serverProps} isStripeVisible={isStripeVisible} isCheckout={isCheckout} />
+        }
+      </div>
     </div>
   )
 }

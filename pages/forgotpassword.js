@@ -1,6 +1,18 @@
-import React from 'react'
+import React, { useState } from 'react';
+
 
 const ForgotPassword = () => {
+  const [inpVal, setInpVal] = useState('');
+
+  const handleOnChange = (e) => {
+    setInpVal(e.target.value);
+  }
+
+
+  const handleOnclick = ()=>{
+    console.log(inpVal);
+  }
+
   return (
     <div className="h-screen flex  items-center justify-center">
       <img
@@ -11,13 +23,14 @@ const ForgotPassword = () => {
         <span className="absolute inset-y-0 left-10 flex items-center">
           <i className="material-icons text-blue-600" style={{ fontSize: '32px' }}>email</i>
         </span>
-        <input className="py-1 pl-10 pr-4 block w-full rounded-md border-transparent hover:border-blue-500 focus:outline-none focus:ring-0 border-2 px-5"
+        <input onChange={handleOnChange} value={inpVal} className="py-1 pl-10 pr-4 block w-full rounded-md border-transparent hover:border-blue-500 focus:outline-none focus:ring-0 border-2 px-5"
           placeholder="Enter your email."
           type="email" />
-          <div>
+        <div>
           <button
+            onClick={handleOnclick}
             type="button"
-            class="inline-block rounded mx-1 bg-blue-600 px-6 pb-2 pt-2 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600  hover:bg-purple-600">
+            className="inline-block rounded mx-1 bg-blue-600 px-6 pb-2 pt-2 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600  hover:bg-purple-600">
             send
           </button>
         </div>

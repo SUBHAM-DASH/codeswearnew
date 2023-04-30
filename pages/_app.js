@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { SessionProvider } from "next-auth/react"
 import Head from 'next/head';
+import Script from 'next/script';
 
 export default function App({ Component, pageProps }) {
 
@@ -25,7 +26,7 @@ export default function App({ Component, pageProps }) {
       //for social login we used SessionProvider
       <SessionProvider session={pageProps.session}>
         <Head>
-          <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"></link>
+          <link defer={true} href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"></link>
         </Head>
         <Component {...pageProps} />
       </SessionProvider>
@@ -36,6 +37,7 @@ export default function App({ Component, pageProps }) {
 
   return (
     <>
+      <Script src='https://kit.fontawesome.com/a076d05399.js' defer={true} crossorigin='anonymous'></Script>
       <Navbar />
       <Component {...pageProps} />
       <Footer />
