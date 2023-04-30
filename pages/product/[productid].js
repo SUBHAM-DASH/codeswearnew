@@ -8,11 +8,6 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import StripePayment from '@/components/StripePayment';
 
-import { loadStripe } from "@stripe/stripe-js";
-const stripePromise = loadStripe(process.env.STRIPE_PUBLISHABLE_KEY);
-
-
-
 const productId = ({ product, pincodes }) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const router = useRouter();

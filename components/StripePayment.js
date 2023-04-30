@@ -2,15 +2,26 @@ import React from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import InjectCheckout from './CreditCard';
-
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const stripePromise = loadStripe("pk_test_51KmaQ3SD8ACl6RuLXXgQ3FWBarDiaU0KsOzH2ejcZBCbySuSad6I5rKN1LPDn6T4z5sH2lkyMJl9JTjagnazKDXn00E9HorWiH");
 
 const StripePayment = ({ isStripeVisible, isCheckout, products }) => {
 
-  const handlePayout = (childData) => {
-    console.log(childData);
-    console.log(products);
+  const handlePayout = async (childData) => {
+    const headers = {
+      headers: {
+        "Content-type": "application/json",
+        "codeswear-token": Cookies.get('codeswear-token')
+      }
+    };
+    await axios.post(`http://localhost:3000/api/payment/stripe`, { ...childData, ...products }, headers).then((res) => {
+      console.log(res)
+    }).catch((error) => {
+      console.log(error.message);
+    })
+
   };
 
   return (
